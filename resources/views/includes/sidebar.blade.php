@@ -27,17 +27,25 @@
         </ul>
       </div>
     </li> -->
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('table') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('table') }}">
+        <i class="mdi mdi-calendar-multiple menu-icon"></i>
+        <span class="menu-title">Calendar</span>
+    </a>
+</li>
+
+
+    <!--li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
         <i class="mdi mdi-calendar-multiple menu-icon"></i>
-        <span class="menu-title">Appointment</span>
+        <span class="menu-title">Calendar</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="form-elements">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
         </ul>
-      </div>
+      </div-->
 
       <div class="collapse" id="form-elements">
         <ul class="nav flex-column sub-menu">
