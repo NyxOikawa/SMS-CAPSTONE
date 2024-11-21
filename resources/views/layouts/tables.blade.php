@@ -123,7 +123,18 @@
                     <label">Month-Year:</label>
                     <input type="month" name="monthYear" id="monthYear" value="{{ request('monthYear') }}"  class=""
                     onchange="this.form.submit()">
-                </form>
+
+                    <label for="district">District:</label>
+                      <select name="district" id="district" onchange="this.form.submit()">
+                          <option value="">All District</option>
+                          @foreach ($district as $d)
+                              <option value="{{ $d->id }}" {{ $selectedDistrict == $d->id ? 'selected' : '' }}>
+                                  {{ $d->district_name }}
+                              </option>
+                          @endforeach
+                      </select>
+
+                  </form>
 
                     <table id="patientTable" style="display:none;">
                       <thead>

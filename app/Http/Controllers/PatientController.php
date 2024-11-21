@@ -98,6 +98,9 @@ class PatientController extends Controller
     $perPage = $request->input('perPage', 10);
     $ageGroup = $request->input('ageGroup');
     $monthYear = $request->input('monthYear');
+    $district = Districts::select('id', 'district_name')->orderBy('district_name', 'ASC')->get();
+    $selectedDistrict = $request->input('district'); // Get the selected district from the request
+
 
     // Base query for patients
     $query = patients::query();
@@ -121,6 +124,10 @@ class PatientController extends Controller
         $query->whereYear('created_at', '=', date('Y', strtotime($monthYear)))
               ->whereMonth('created_at', '=', date('m', strtotime($monthYear)));
     }
+   
+    if ($selectedDistrict) {
+        $query->where('district_id', '=', $selectedDistrict);
+    }
 
     // Pagination logic
     if ($perPage == 'all') {
@@ -129,7 +136,7 @@ class PatientController extends Controller
         $patientsData = $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
-    return view('layouts.tables', compact('patientsData', 'perPage', 'ageGroup', 'monthYear'));
+    return view('layouts.tables', compact('patientsData', 'perPage', 'ageGroup', 'monthYear', 'selectedDistrict','district'));
 }
 
 
@@ -138,7 +145,7 @@ class PatientController extends Controller
 
     public function addIndex(){
         $parents = parents::with('patients')->get();
-        $districts = Districts::with('patientsDistrict')->get();
+        $districts = Districts::with('patientsDistrict')->orderBy('district_name', 'ASC')->get();
         return view('layouts.add-patient', compact('parents','districts'));
     }
 
@@ -223,7 +230,7 @@ class PatientController extends Controller
 
     public function editIndex(string $id){
         $parents = parents::with('patients')->get();
-        $districts = Districts::with('patientsDistrict')->get();
+        $districts = Districts::with('patientsDistrict')->orderBy('district_name', 'ASC')->get();
         $patient = patients::findOrFail($id);
         return view('layouts.edit-patient', compact('patient','parents','districts'));
     }
@@ -247,6 +254,9 @@ class PatientController extends Controller
         $patient->hfa = $this->getHeightCategory($request->input('gender'), $age, $request->input('height'));
         $patient->wfl_h = $this->getWeightHeightCategory($request->input('gender'), $request->input('height'), $request->input('weight'));
     
+        if(empty($patient->district_id)){
+            return redirect()->back()->with('error', 'District is required');
+        }
 
         if ($request->hasFile('profile_pic')) {
             $picture = $request->file('profile_pic');
@@ -260,8 +270,10 @@ class PatientController extends Controller
     
             $patient->profile_pic = $profile_pic;
         }
+        
         $patient->save();
-        return redirect()->back()->with('success', 'Patient Info updated successfully');
+        return redirect()->route('table')->with('success', 'Patient Info updated successfully');
+
     }
 
 
@@ -280,6 +292,9 @@ class PatientController extends Controller
         $search = $request->input('searchPatient');
         $query = patients::with('parents') 
             ->orderBy('lastname', 'ASC');
+        $monthYear = $request->input('monthYear');
+        $district = Districts::select('id', 'district_name')->orderBy('district_name', 'ASC')->get();
+        $selectedDistrict = $request->input('district');
         
         if (strlen($search) > 0) {
             $query->where(function ($q) use ($search) {
@@ -328,7 +343,7 @@ class PatientController extends Controller
                 $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 48 AND 59');
             }
 
-                return view('layouts.tables', compact('patientsData', 'perPage','ageGroup'));
+                return view('layouts.tables', compact('patientsData', 'perPage','ageGroup','monthYear','district','selectedDistrict'));
             }
             
 }
