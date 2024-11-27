@@ -25,6 +25,18 @@
 }
 
 
+
+
+
+
+
+/* Optional: Darken the modal backdrop */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.4); /* Darker backdrop */
+}
+
+
+
 /* Action Buttons */
 .action-buttons .btn {
     border-radius: 12px; /* Adjust this value for the desired roundness */
@@ -279,6 +291,190 @@
         }
     }
   
+
+
+/* Modal Base Styles */
+.custom-modal .modal-dialog {
+    max-width: 95%;
+    width: 420px;
+    margin: 1rem auto;
+}
+
+.custom-modal .modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Container and Layout */
+.modal-container {
+    padding: 1.5rem;
+}
+
+/* Close Button */
+.btn-close-custom {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    color: #6b7280;
+    transition: all 0.15s ease;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.btn-close-custom:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #374151;
+}
+
+/* Icon Styles */
+.icon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.icon-container {
+    background-color: #FEE2E2;
+    padding: 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-icon {
+    width: 2rem;
+    height: 2rem;
+    color: #DC2626;
+}
+
+/* Content Styles */
+.content-section {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    color: #111827;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.patient-name {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.warning-text {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.caution-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    min-width: 120px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cancel {
+    background-color: #F3F4F6;
+    color: #4B5563;
+    border: 1px solid #E5E7EB;
+}
+
+.btn-cancel:hover {
+    background-color: #E5E7EB;
+}
+
+.btn-delete {
+    background-color: #DC2626;
+    color: white;
+    border: none;
+}
+
+.btn-delete:hover {
+    background-color: #B91C1C;
+}
+
+/* Loading State */
+.btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .custom-modal .modal-dialog {
+        margin: 1rem;
+        width: auto;
+    }
+
+    .modal-container {
+        padding: 1.25rem;
+    }
+
+    .button-container {
+        flex-direction: column-reverse;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    .modal-title {
+        font-size: 1.1rem;
+    }
+
+    .patient-name {
+        font-size: 1rem;
+    }
+
+    .icon-container {
+        padding: 0.875rem;
+    }
+
+    .delete-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+}
+
+/* Focus States for Accessibility */
+.btn:focus,
+.btn-close-custom:focus {
+    outline: 2px solid #60A5FA;
+    outline-offset: 2px;
+}
+
+
+    
 /* General top notification style */
   /* General top notification style */
   .top-notification {
@@ -353,8 +549,6 @@
     transition: top 0.5s ease, visibility 0s linear 0.5s; /* Smooth transition back */
 }
 
-
-
 </style>
 <body>
     <div class="container-scroller">
@@ -371,7 +565,6 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <!-- Title Section -->
           <h4 class="card-title m-0">Patients Table</h4>
-
           <!-- Action Buttons -->
         <div class="action-buttons d-flex gap-3">
   <button class="btn btn-info btn-sm text-white d-flex align-items-center" onclick="printTable()">
@@ -404,15 +597,9 @@
             <button type="submit" class="input-group-text" aria-label="Search">
                 <i class="icon-search"></i>
             </button>
-            
         </div>
     </form>
 </div>
-                   
-
-
-
-
 <form method="GET" action="{{ route('table') }}" class="filters-container">
     <div class="filter-group">
         <label for="perPage" class="filter-label">Items per page:</label>
@@ -582,24 +769,114 @@
             @endif
         </td>
                                                     <td class="no-print">
-                                                        <a href="{{ route('view.profile', ['id'=> $patient->id]) }}" 
-                                                           class="btn btn-success btn-sm btn-action"
-                                                           title="View Profile">
-                                                            <i class="mdi mdi-eye text-white"></i>
-                                                        </a>
-                                                            <button type="button" 
-                                                                    class="btn btn-danger btn-sm btn-action"
-                                                                    data-bs-toggle="modal" 
-                                                                    data-bs-target="#deleteModal{{$patient->id}}"
-                                                                    title="Delete Patient">
-                                                                <i class="mdi mdi-delete text-white"></i>
-                                                            </button>
+
+
+
+
+     <a href="{{ route('view.profile', ['id'=> $patient->id]) }}" 
+   class="custom-btn custom-btn-success"
+   title="View Profile">
+    <i class="mdi mdi-eye"></i>
+</a>
+
+<button type="button" 
+        class="custom-btn custom-btn-danger"
+        data-bs-toggle="modal" 
+        data-bs-target="#deleteModal{{$patient->id}}"
+        title="Delete Patient">
+    <i class="mdi mdi-delete"></i>
+</button>
+
+
+
+
                                                     </td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
                                     </div>
+
+
+<style>/* General Button Styles */
+/* Custom button styling */
+.custom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 1rem;  /* Increased padding for a slightly larger oval shape */
+    border-radius: 10px; /* Slightly larger rounded corners for a more noticeable oval shape */
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    height: auto;  /* Ensures the height adjusts based on the content */
+    min-width: 20px;  /* Fixed width for the button */
+    margin-right: 0.7rem;  /* Adds space between buttons horizontally */
+}
+
+/* To add space at the bottom (for vertical alignment), use margin-bottom */
+.custom-btn + .custom-btn {
+    margin-top: 0.1rem;  /* Vertical spacing between stacked buttons */
+}
+
+/* Success Button */
+.custom-btn-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.custom-btn-success:hover {
+    background-color: #45A049;
+}
+
+/* Danger Button */
+.custom-btn-danger {
+    background-color: #F44336;
+    color: white;
+}
+
+.custom-btn-danger:hover {
+    background-color: #D32F2F;
+}
+
+/* Icon Styling */
+.custom-btn i {
+    font-size: 1rem; /* Slightly larger icon size for better visibility */
+    margin: 0;  /* Removed margin to better align the icon */
+    padding: 0; /* No extra padding, icon takes up the container space */
+}
+
+/* Icon Container Adjustment */
+.custom-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;  /* Slightly larger oval shape */
+    padding: 0.375rem 1rem;  /* Slightly more padding for a bigger button */
+}
+
+/* Accessibility Focus State */
+.custom-btn:focus {
+    outline: 2px solid #60A5FA;
+    outline-offset: 2px;
+}
+
+/* Responsive Design for Small Buttons */
+@media (max-width: 640px) {
+    .custom-btn {
+        width: auto; /* Ensures the button doesn't stretch full width */
+        padding: 0.5rem 1rem; /* Slightly larger padding for touch-friendly design */
+    }
+}
+</style>
+
+
+
+
+
+
 
                                     <!-- Pagination -->
                                     @if($perPage != 'all')
@@ -616,37 +893,84 @@
         
     <!-- Delete Modals -->
     @foreach ($patientsData as $patient)
-    @if($patient->age > 5)
-        <div class="modal fade" id="deleteModal{{$patient->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$patient->id}}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel{{$patient->id}}">Delete Patient</h5>
-                        <button type="button" class="btn-close rounded" data-bs-dismiss="modal" aria-label="Close"></button>
+
+
+    <div class="modal fade custom-modal" id="deleteModal{{$patient->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$patient->id}}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-lg">
+            <div class="modal-body p-0">
+                <!-- Close button -->
+                <button type="button" 
+                        class="btn-close-custom" 
+                        data-bs-dismiss="modal" 
+                        aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="modal-container">
+                    <!-- Static icon -->
+                    <div class="icon-wrapper">
+                        <div class="icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
                     </div>
-                    <form action="{{ route('patient.delete', ['id' => $patient->id]) }}" method="POST">
+
+                    <form action="{{ route('patient.delete', ['id' => $patient->id]) }}" method="POST" class="delete-form">
                         @csrf
                         @method('DELETE')
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete <span class="text-danger fw-bold">{{$patient->lastname}}, {{$patient->firstname}} {{$patient->middlename}}</span>?</p>
-                            <p class="text-muted small">This action cannot be undone.</p>
+                        
+                        <!-- Content section -->
+                        <div class="content-section">
+                            <h5 class="modal-title">Delete Confirmation</h5>
+                            <p class="patient-name">
+                                <span class="text-danger fw-bold">{{$patient->lastname}}, {{$patient->firstname}} {{$patient->middlename}}</span>
+                            </p>
+                            <p class="warning-text">Are you sure you want to delete this patient record?</p>
+                            <p class="caution-text">This action cannot be undone.</p>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-sm rounded" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger btn-sm rounded">Delete</button>
+
+                        <!-- Action buttons -->
+                        <div class="button-container">
+                            <button type="button" 
+                                    class="btn btn-cancel" 
+                                    data-bs-dismiss="modal">
+                                <span>No, cancel</span>
+                            </button>
+                            <button type="submit" 
+                                    class="btn btn-delete">
+                                <span>Yes, delete</span>
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
+</div>
+
 @endforeach
-<style>/* Dark background for modal content */
-/* Optional: Darken the modal backdrop */
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.4); /* Darker backdrop */
-}
-</style>
+
+
+
+<!-- Simple JavaScript for loading state -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForms = document.querySelectorAll('.delete-form');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function() {
+            const submitButton = this.querySelector('.btn-delete');
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+        });
+    });
+});
+</script>
+
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
@@ -755,8 +1079,6 @@
     // Close the window after printing
     printWindow.close();
 
-    // Revert the table back to not being displayed
-    table.style.display = 'none'; // Hide the table again
 }
 
 

@@ -1,7 +1,11 @@
-@include ('includes.base')
+@include('includes.base')
+</head>
+<!-- Add this in the <head> section of your HTML file -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
-   /* Reset and Base Styles */
-   * {
+  /* Reset and Base Styles */
+  * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -27,8 +31,8 @@ body {
     border-radius: 16px;
     padding: 5px;
     margin-top: 0rem !important;
-
 }
+
 
 /* Card Styles */
 .card {
@@ -96,7 +100,10 @@ body {
     display: block;
 }
 
-/* Button Styles */
+
+
+
+/* Button Styles for All Modal and S */
 .btn {
     display: inline-block;
     font-weight: 400;
@@ -111,44 +118,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
-}
 
-.btn-primary:hover {
-    color: #fff;
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-.btn-info {
-    display: flex;
-    align-items: center;
-    gap: 0px;
-    color: #fff;
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-}
-
-.btn-info:hover {
-    color: #fff;
-    background-color: #138496;
-    border-color: #117a8b;
-}
-
-.btn-secondary {
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    color: #fff;
-    background-color: #545b62;
-    border-color: #4e555b;
-}
 
 /* Responsive Layout */
 .row {
@@ -185,78 +155,286 @@ body {
 }
 
 
-    /* Custom Modal Styles */
+
+/* Ensure consistent height for both input and select elements, excluding file inputs */
+.form-control, .form-select {
+    height: calc(2.25rem + 2px); /* This height is the same as Bootstrap's default input height */
+    padding: 0.625rem 0.75rem; /* Ensure consistent padding */
+    font-size: 1rem; /* Set a consistent font size */
+    line-height: 1.5; /* Set consistent line height */
+}
+
+
+/* Exclude file input from the height and padding styles */
+input[type="file"].form-control {
+    height: auto; /* Reset height to default */
+    padding: 0.375rem 0.75rem; /* Keep the default padding for file inputs */
+}
+
+/* Save Changes Button */
+.btn-primary {
+    color: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter, subtler shadow */
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Lighter hover shadow */
+    transform: translateY(-1px); /* Slight lift on hover */
+}
+
+.btn-primary:active {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Even lighter shadow when pressed */
+    transform: translateY(1px); /* Button presses down slightly */
+}
+
+
+
+/* Modal Base Styles */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+}
+
+.modal-dialog {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+                0 5px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+/* Modal Header */
+.modal-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    padding: 1.25rem 1.5rem;
+    position: relative;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #111827;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+
+
+
+/* Modal Body */
+.modal-body {
+    padding: 1.5rem;
+    color: #374151;
+}
+
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+        margin-top: 8rem;
+    }
+
     .modal-content {
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-radius: 12px;
     }
 
     .modal-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        padding: 15px;
+        padding: 1rem;
     }
 
     .modal-body {
-        padding: 20px;
+        padding: 1.25rem;
     }
 
-    .form-control, .form-select {
-        transition: all 0.3s ease;
-        border-color: #ced4da;
+    .row > div {
+        margin-bottom: 1rem;
     }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+    .modal-dialog,
+    .modal-overlay,
+    .btn,
+    .form-control,
+    .form-select {
+        transition: none;
+    }
+}
+
+/* High Contrast Mode */
+@media (forced-colors: active) {
+    .modal-content {
+        border: 2px solid CanvasText;
     }
 
-    .form-control.is-invalid, .form-select.is-invalid {
-        border-color: #dc3545;
-    }
-
-    .invalid-feedback {
-        color: #dc3545;
-        display: none;
-    }
-
-    .form-control.is-invalid ~ .invalid-feedback,
-    .form-select.is-invalid ~ .invalid-feedback {
-        display: block;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-        transition: all 0.3s ease;
-        border-radius: 13px;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-
+    .btn-primary,
     .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
+        border: 2px solid ButtonText;
     }
+}
 
-    .btn-secondary:hover {
-        background-color: #545b62;
-        border-color: #545b62;
+
+/* Card Styles */
+.card {
+    border: none;
+    background-color: transparent;
+}
+
+.card-title {
+    color: #333;
+    font-weight: 600;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Form Styles */
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-control, .form-select {
+    display: block;
+    width: 100%;
+    padding: 0.575rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #007bff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #dc3545;
+}
+
+.form-control.is-invalid ~ .invalid-feedback,
+.form-select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+
+
+/* Responsive Layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-md-3, .col-md-4, .col-md-6, .col-md-12 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+    .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
     }
-
-    @media (max-width: 576px) {
-        .modal-dialog {
-            margin: 1.75rem 0.5rem;
-            max-width: calc(100% - 1rem);
-        }
-
-        .row > div {
-            margin-bottom: 0.5rem;
-        }
+    .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
     }
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    .col-md-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+    
 /* General top notification style */
 /* General top notification style */
   .top-notification {
@@ -331,6 +509,22 @@ body {
     transition: top 0.5s ease, visibility 0s linear 0.5s; /* Smooth transition back */
 }
 
+/* Shadow effect on hover and click for both buttons */
+.btn-warning.text-dark, .btn-info.text-white {
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out; /* Smooth transition for shadow and movement */
+}
+
+/* Hover state with less shadow and minimal movement */
+.btn-warning.text-dark:hover, .btn-info.text-white:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Softer and more subtle shadow */
+    transform: translateY(-1px); /* Minimal lift on hover */
+}
+
+/* Active state with less shadow and minimal movement */
+.btn-warning.text-dark:active, .btn-info.text-white:active {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Even lighter shadow when clicked */
+    transform: translateY(0px); /* No movement on click */
+}
 
 </style>
 
@@ -347,7 +541,7 @@ body {
                 <div class="card">
                     <div class="card-body">
                     <h3 class="card-title d-flex justify-content-between align-items-center">
-                    Update Enrollment Information
+                    Update Profile Information
     <div class="ms-auto d-flex gap-2">
         <a href="{{route('view.profile', ['id' => $patient->id ])}}" class="btn btn-warning btn-sm text-dark" style="border-radius: 0.50rem; padding: 0.5rem 1.25rem;">
         View Profile
@@ -429,35 +623,35 @@ body {
         </div>
     </div>
 
-    <!-- Height -->
-    <div class="col-md-4">
-        <div class="form-group mb-3">
-            <label for="height" class="form-label">Height (cm)</label>
-            <input type="number" step="0.1" min="0" max="250" 
-                   class="form-control @error('height') is-invalid @enderror" 
-                   id="height" name="height" 
-                   value="{{ old('height', $patient->height) }}" 
-                   placeholder="Enter height in cm"/>
-            @error('height')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+<!-- Height -->
+<div class="col-md-4">
+    <div class="form-group mb-3">
+        <label for="height" class="form-label">Height (cm)</label>
+        <input type="number" step="0.1" min="0" max="250" 
+               class="form-control @error('height') is-invalid @enderror" 
+               id="height" name="height" 
+               value="{{ old('height', $patient->height) }}" 
+               placeholder="Enter height in cm" required />
+        @error('height')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
+</div>
 
-    <!-- Weight -->
-    <div class="col-md-4">
-        <div class="form-group mb-3">
-            <label for="weight" class="form-label">Weight (kg)</label>
-            <input type="number" step="0.1" min="0" max="500" 
-                   class="form-control @error('weight') is-invalid @enderror" 
-                   id="weight" name="weight" 
-                   value="{{ old('weight', $patient->weight) }}" 
-                   placeholder="Enter weight in kg"/>
-            @error('weight')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+<!-- Weight -->
+<div class="col-md-4">
+    <div class="form-group mb-3">
+        <label for="weight" class="form-label">Weight (kg)</label>
+        <input type="number" step="0.1" min="0" max="500" 
+               class="form-control @error('weight') is-invalid @enderror" 
+               id="weight" name="weight" 
+               value="{{ old('weight', $patient->weight) }}" 
+               placeholder="Enter weight in kg" required />
+        @error('weight')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
+</div>
 </div>
 
 <div class="row">
@@ -536,7 +730,8 @@ body {
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" name="submit" class="btn btn-primary fw-medium px-4 py-2 rounded-2">Save Changes</button>
+
                             </div>
                         </form>
                     </div>
@@ -550,7 +745,7 @@ body {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Add Parent</h5>
+                <h5 class="modal-title" id="myModalLabel">Parent/Guardian Form</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

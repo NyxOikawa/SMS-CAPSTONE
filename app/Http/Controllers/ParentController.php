@@ -7,43 +7,56 @@ use App\Models\parents;
 
 class ParentController extends Controller
 {
-    public function store(Request $request){
-
-        if($request->has('submit')){
-        $lastname = $request->input('lastname');
-        $firstname = $request->input('firstname');
-        $middlename = $request->input('middlename');
-        $birthday = $request->input('birthday');
-        $civil_stat = $request->input('civil_stat');
-        $contact_no = $request->input('contact_no');
-
-
-        $data = [
-            'lastname' => $lastname,
-            'firstname' => $firstname,
-            'middlename' => $middlename,
-            'birthday' => $birthday,
-            'civil_stat' => $civil_stat,
-            'contact_no' => $contact_no, 
-        ];
-
-        $parent = parents::create($data);
-        if ($parent) {
-            return redirect()->back()->with('success', 'Parent info saved successfully!');
+    public function store(Request $request)
+    {
+        if ($request->has('submit')) {
+            // Validate the incoming request data
+            $request->validate([
+                'lastname' => 'required|string|max:255',
+                'firstname' => 'required|string|max:255',
+                'middlename' => 'nullable|string|max:255',
+                'birthday' => 'required|date',
+                'civil_stat' => 'required|string|max:255',
+                'contact_no' => 'required|max:15', // Ensure the contact number is required and max 15 characters
+            ]);
+            
+            $lastname = $request->input('lastname');
+            $firstname = $request->input('firstname');
+            $middlename = $request->input('middlename');
+            $birthday = $request->input('birthday');
+            $civil_stat = $request->input('civil_stat');
+            $contact_no = $request->input('contact_no');
+    
+            $data = [
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'middlename' => $middlename,
+                'birthday' => $birthday,
+                'civil_stat' => $civil_stat,
+                'contact_no' => $contact_no, 
+            ];
+    
+            $existingParent = parents::where('lastname', $lastname)
+                                     ->where('firstname', $firstname)
+                                     ->where('middlename', $middlename)
+                                     ->first();
+    
+            if ($existingParent) {
+                return redirect()->back()->with('error', 'Parent already in records!');
+            }
+    
+            $parent = parents::create($data);
+            if ($parent) {
+                return redirect()->back()->with('success', 'Parent info saved successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Unable to save information!');
+            }
         } else {
-            return redirect()->back()->with('error', 'Unable to saved information!');
-        }
-
-        $existingParent = parents::where('lastname', $lastname && 'firstname', $firstname && 'middlename', $middlename)->first();
-        if ($existingParent) {
-            return redirect()->back()->with('error', 'Parent already in records!');
-        }
-        }
-        else{
             return redirect()->back()->with('error', 'Form submission error!');
         }
-
     }
+    
+    
     public function parentIndex(Request $request){
 
         $perPage = $request->input('perPage', 10);
@@ -102,8 +115,10 @@ class ParentController extends Controller
         } else {
             $parentsData = $query->paginate($perPage);
         }
+        
         if ($parentsData->isEmpty()) {
-            return redirect()->back()->with('error', 'No results found for your search.');
+            $searchedTerm = $searchParent ?: 'your search'; // Fallback if search term is empty
+            return redirect()->back()->with('error', "Sorry, we couldn't find result for '$searchedTerm'.");
         }
         return view('layouts.parents-data', compact('parentsData', 'perPage'));
     }
