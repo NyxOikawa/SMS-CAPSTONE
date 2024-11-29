@@ -203,7 +203,7 @@
                             <td>{{ $patient->wfa }}</td>
                             <td>{{ $patient->hfa }}</td>
                             <td>{{ $patient->wfl_h }}</td>
-                            <td>{{ $patient->status->status_name}}</td>
+                            <td>{{ optional($patient->status)->status_name ?? '' }}</td>
                             <td>
                             <a href="{{ route('view.profile', ['id'=> $patient->id]) }}" class="btn btn-success btn-sm text-white"><i class="mdi mdi-eye text-white"></i></a>
                               <a href="" data-bs-toggle="modal" data-bs-target="#deleteModal{{$patient->id}}" class="btn btn-danger btn-sm text-white"><i class="mdi mdi-delete text-white"></i></a>

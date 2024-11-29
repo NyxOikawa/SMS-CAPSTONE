@@ -179,6 +179,26 @@ class PatientController extends Controller
             $hfa = $this->getHeightCategory($request->input('gender'), $age, $request->input('height'));
             $wfl_h = $this->getWeightHeightCategory($request->input('gender'), $request->input('height'), $request->input('weight'));
     
+            // Check for existing records with same name (to match current patient)
+            $existing_records = patients::where('lastname', $lastname)
+                ->where('firstname', $firstname)
+                ->where('middlename', $middlename)
+                ->get();
+    
+            // If there are matching records, set all matching records' status_id to 2
+            if ($existing_records->isNotEmpty()) {
+                foreach ($existing_records as $record) {
+                    // Update status_id to 2 for existing records
+                    $record->status_id = 2;
+                    $record->save();
+                }
+                // Set status_id to 2 for the current record as well (override default 1)
+                $status_id = 2;
+            } else {
+                // No matching records found, set status_id to 1 for the new record
+                $status_id = 1;
+            }
+    
             // Handle file upload for profile picture
             if ($request->hasFile('profile_pic')) {
                 $picture = $request->file('profile_pic');
@@ -188,17 +208,15 @@ class PatientController extends Controller
                 if (!in_array($ext, ['jpg', 'png', 'jpeg'])) {
                     return redirect()->back()->with('error', 'Profile picture must be an image (jpg, png, jpeg).');
                 }
-
+    
                 $profile_pic = time() . '_' . $picture->getClientOriginalName();
                 $image = Image::make($picture->getRealPath())->fit(1080, 1055);
                 $image->save(public_path('storage/pictures/' . $profile_pic), 90);
-
-
             } else {
                 $profile_pic = null;
-                // return redirect()->back()->with('error', 'Profile picture is required.');
             }
-
+    
+            // Prepare data for new patient record
             $data = [
                 'lastname' => $lastname,
                 'firstname' => $firstname,
@@ -213,20 +231,25 @@ class PatientController extends Controller
                 'hfa' => $hfa,
                 'wfl_h' => $wfl_h,
                 'parent_id' => $parent_id,
+                'status_id' => $existing_records ? 2 : 1,
                 'district_id' => $district_id,
-                'profile_pic' => $profile_pic, 
+                'profile_pic' => $profile_pic,
             ];
-
-
+    
+            // Create new patient record
             $patient = patients::create($data);
+    
+            // Return success or error message
             if ($patient) {
                 return redirect()->back()->with('success', 'Information saved successfully!');
             } else {
                 return redirect()->back()->with('error', 'Unable to save information!');
             }
         }
+    
         return redirect()->back()->with('error', 'Form submission error!');
     }
+    
 
     public function editIndex(string $id){
         $parents = parents::with('patients')->get();
@@ -248,7 +271,6 @@ class PatientController extends Controller
         $patient->weight = $request->input('weight'); 
         $patient->parent_id = $request->input('parent_id');
         $patient->district_id = $request->input('district_id');
-        $patient->status_id = 2;
         $age = Carbon::parse($patient->birthday)->diffInMonths(Carbon::now());
         $patient->wfa = $this->getWeightCategory($request->input('gender'), $age, $request->input('weight'));
         $patient->hfa = $this->getHeightCategory($request->input('gender'), $age, $request->input('height'));
