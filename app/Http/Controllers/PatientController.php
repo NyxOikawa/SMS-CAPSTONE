@@ -308,64 +308,79 @@ class PatientController extends Controller
     }
 
     public function searchPatient(Request $request)
-    
-    {
-       
-        $search = $request->input('searchPatient');
-        $query = patients::with('parents') 
-            ->orderBy('lastname', 'ASC');
-        $monthYear = $request->input('monthYear');
-        $district = Districts::select('id', 'district_name')->orderBy('district_name', 'ASC')->get();
-        $selectedDistrict = $request->input('district');
-        
-        if (strlen($search) > 0) {
-            $query->where(function ($q) use ($search) {
-                $q->where('id', 'LIKE', '%' . $search . '%')
-                  ->orWhere('lastname', 'LIKE', '%' . $search . '%')
-                  ->orWhere('firstname', 'LIKE', '%' . $search . '%')
-                  ->orWhere('middlename', 'LIKE', '%' . $search . '%')
-                  ->orWhere('gender', 'LIKE', '%' . $search . '%')
-                  ->orWhere('birthday', 'LIKE', '%' . $search . '%')
-                  ->orWhere('height', 'LIKE', '%' . $search . '%')
-                  ->orWhere('weight', 'LIKE', '%' . $search . '%')
-                  ->orWhereHas('parents', function ($parentQuery) use ($search) {
-                      $parentQuery->where('lastname', 'LIKE', '%' . $search . '%')
-                                  ->orWhere('firstname', 'LIKE', '%' . $search . '%')
-                                  ->orWhere('middlename', 'LIKE', '%' . $search . '%')
-                                  ->orWhere('civil_stat', 'LIKE', '%' . $search . '%');
-                  });
-            });
+{
+    $search = $request->input('searchPatient');
+    $monthYear = $request->input('monthYear');
+    $selectedDistrict = $request->input('district');
+    $ageGroup = $request->input('ageGroup');
+    $perPage = $request->input('perPage', 'all');
+
+    // Fetch districts for filtering options
+    $district = Districts::select('id', 'district_name')->orderBy('district_name', 'ASC')->get();
+
+    // Initialize the query
+    $query = patients::with('parents')
+        ->orderBy('lastname', 'ASC');
+
+    // Apply search filter
+    if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->where('id', 'LIKE', '%' . $search . '%')
+              ->orWhere('lastname', 'LIKE', '%' . $search . '%')
+              ->orWhere('firstname', 'LIKE', '%' . $search . '%')
+              ->orWhere('middlename', 'LIKE', '%' . $search . '%')
+              ->orWhere('gender', 'LIKE', '%' . $search . '%')
+              ->orWhere('birthday', 'LIKE', '%' . $search . '%')
+              ->orWhere('height', 'LIKE', '%' . $search . '%')
+              ->orWhere('weight', 'LIKE', '%' . $search . '%')
+              ->orWhereHas('parents', function ($parentQuery) use ($search) {
+                  $parentQuery->where('lastname', 'LIKE', '%' . $search . '%')
+                              ->orWhere('firstname', 'LIKE', '%' . $search . '%')
+                              ->orWhere('middlename', 'LIKE', '%' . $search . '%')
+                              ->orWhere('civil_stat', 'LIKE', '%' . $search . '%');
+              });
+        });
+    }
+
+    // Apply district filter
+    if (!empty($selectedDistrict)) {
+        $query->where('district_id', $selectedDistrict);
+    }
+
+    // Apply age group filtering
+    if (!empty($ageGroup)) {
+        if ($ageGroup === '0-5') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 0 AND 5');
+        } elseif ($ageGroup === '6-11') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 6 AND 11');
+        } elseif ($ageGroup === '12-23') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 12 AND 23');
+        } elseif ($ageGroup === '24-35') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 24 AND 35');
+        } elseif ($ageGroup === '36-47') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 36 AND 47');
+        } elseif ($ageGroup === '48-59') {
+            $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 48 AND 59');
         }
-        $perPage = $request->input('perPage', 'all');
-        if ($perPage === 'all') {
-            $patientsData = $query->get();
-        } else {
-            $patientsData = $query->paginate($perPage); 
-        }
-        if ($patientsData->isEmpty()) {
-            return redirect()->back()->with('error', 'No results found for your search.');
-        } 
+    }
 
-        $ageGroup = $request->input('ageGroup');
+    // Fetch results with pagination
+    $patientsData = $perPage === 'all' ? $query->get() : $query->paginate($perPage);
 
-            $query = patients::query();
+    // Handle empty results
+    if ($patientsData->isEmpty()) {
+        $filterMessage = $search ?: ($selectedDistrict ? "district filter" : "applied filters");
+        return redirect()->back()->with('error', "No results found for {$filterMessage}.");
+    }
 
-            // Apply age group filtering
-            if ($ageGroup === '0-5') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 0 AND 5');
-            } elseif ($ageGroup === '6-11') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 6 AND 11');
-            } elseif ($ageGroup === '12-23') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 12 AND 23');
-            } elseif ($ageGroup === '24-35') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 24 AND 35');
-            } elseif ($ageGroup === '36-47') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 36 AND 47');
-            } elseif ($ageGroup === '48-59') {
-                $query->whereRaw('TIMESTAMPDIFF(MONTH, birthday, CURDATE()) BETWEEN 48 AND 59');
-            }
+    return view('layouts.tables', compact(
+        'patientsData',
+        'perPage',
+        'ageGroup',
+        'monthYear',
+        'district',
+        'selectedDistrict'
+    ));
+}
 
-                return view('layouts.tables', compact('patientsData', 'perPage','ageGroup','monthYear','district','selectedDistrict'));
-            }
-            
 }
